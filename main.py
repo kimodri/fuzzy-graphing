@@ -152,3 +152,16 @@ print(f"Rule 1 (Fast) Strength: {fast_strength:.4f}")
 print(f"Rule 2 (Slow) Strength: {slow_strength:.4f}")
 print(f"\nFinal Defuzzified Output:")
 print(f"Crisp Speed to drive: {final_crisp_speed:.2f} mph")
+
+
+def calculate_weighted_average_speed(speed_graph, rule_fast_strength, rule_slow_strength):
+    """Defuzzify the output fuzzy set into a crisp speed value using the weighted average method.
+
+    This method computes a weighted average of the representative values of each output fuzzy set,
+    where the weights are the firing strengths of the corresponding rules.
+
+    For simplicity, we use the midpoints of the "Slow" and "Fast" fuzzy sets as their representative values:
+        - Slow midpoint: (0 + 75) / 2 = 37.5 mph
+        - Fast midpoint: (25 + 125) / 2 = 75 mph
+    """
+    pass 
