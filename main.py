@@ -48,20 +48,20 @@ def get_slow_strength(cloudy_value, cool_value):
     return min(cloudy_value, cool_value)
 
 
-# --- Input fuzzy variable: Temperature (°F) ---
+# Input fuzzy variable: Temperature (°F) 
 temp_graph = FuzzyGraph("Temperature Graph")
 temp_graph.register_graph(TrapMF(0, 0, 30, 50, name="Freezing"))
 temp_graph.register_graph(TriMF(30, 50, 70, name="Cool"))
 temp_graph.register_graph(TriMF(50, 70, 90, name="Warm"))
 temp_graph.register_graph(TrapMF(70, 90, 120, float('inf'), name="Hot"))
 
-# --- Input fuzzy variable: Cloud Cover (%) ---
+# Input fuzzy variable: Cloud Cover (%) 
 cover_graph = FuzzyGraph("Cover Graph")
 cover_graph.register_graph(TrapMF(0, 0, 20, 40, name="Sunny"))
 cover_graph.register_graph(TriMF(20, 50, 80, name="Partly Cloudy"))
 cover_graph.register_graph(TrapMF(60, 80, 110, float('inf'), name="Overcast"))
 
-# --- Output fuzzy variable: Speed (mph) ---
+# Output fuzzy variable: Speed (mph) 
 speed_graph = FuzzyGraph("Speed Graph")
 speed_graph.register_graph(TrapMF(0, 0, 25, 75, name="Slow"))
 speed_graph.register_graph(TrapMF(25, 75, 125, float('inf'), name="Fast"))
@@ -72,7 +72,7 @@ parser.add_argument("--temp", type=float, required=True, help="Temperature value
 parser.add_argument("--cover", type=float, required=True, help="Cloud cover percentage (0-100+)")
 args = parser.parse_args()
 
-# --- Step 1: Fuzzification — convert crisp inputs into membership degrees ---
+# Fuzzification — convert crisp inputs into membership degrees 
 temp_graph.print_membership(args.temp)
 print()
 cover_graph.print_membership(args.cover)
@@ -80,7 +80,7 @@ cover_graph.print_membership(args.cover)
 temperature_memberships = temp_graph.calculate_membership(args.temp)
 cover_memberships = cover_graph.calculate_membership(args.cover)
 
-# --- Step 2: Rule evaluation — determine how strongly each rule fires ---
+# Rule evaluation — determine how strongly each rule fires 
 sunny_value = cover_memberships.get("Sunny")
 warm_value = temperature_memberships.get("Warm")
 
@@ -124,19 +124,19 @@ def calculate_centroid_speed(speed_graph, rule_fast_strength, rule_slow_strength
     # instead of hardcoding the upper bound.
     for x in range(0, 126):
 
-        # 1. Get raw membership heights at this speed value
+        # Get raw membership heights at this speed value
         speed_memberships = speed_graph.calculate_membership(x)
         raw_slow = speed_memberships.get("Slow", 0.0)
         raw_fast = speed_memberships.get("Fast", 0.0)
 
-        # 2. Clip each shape at its rule's firing strength (Mamdani implication)
+        # Clip each shape at its rule's firing strength (Mamdani implication)
         clipped_slow = min(raw_slow, rule_slow_strength)
         clipped_fast = min(raw_fast, rule_fast_strength)
 
-        # 3. Aggregate: take the max to form the combined output shape
+        # Aggregate: take the max to form the combined output shape
         mu_x = max(clipped_slow, clipped_fast)
 
-        # 4. Accumulate for the centroid formula: sum(x * mu) / sum(mu)
+        # Accumulate for the centroid formula: sum(x * mu) / sum(mu)
         numerator += (x * mu_x)
         denominator += mu_x
 
@@ -144,7 +144,7 @@ def calculate_centroid_speed(speed_graph, rule_fast_strength, rule_slow_strength
         return 0.0
     return numerator / denominator
 
-# --- Step 3: Defuzzification — convert fuzzy output into a crisp speed ---
+# Defuzzification — convert fuzzy output into a crisp speed
 final_crisp_speed = calculate_centroid_speed(speed_graph, fast_strength, slow_strength)
 
 print(f"\nRule Strengths:")

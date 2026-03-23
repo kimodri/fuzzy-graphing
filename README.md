@@ -53,3 +53,6 @@ Rule 2 (Slow) Strength: 0.0000
 Final Defuzzified Output:
 Crisp Speed to drive: 81.20 mph
 ```
+
+Formula:
+`mu_x = max(min(raw_slow, 0.1667), min(raw_fast, 0.75))`
