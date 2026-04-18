@@ -213,6 +213,11 @@ cover_graph.register_graph(TrapMF((0, 0), (60, 0), (80, 1), (100, 1), name="Over
 temp = args.temp
 cover = args.cover
 
+if temp < 0 or temp > 100:
+    raise SystemExit(f"Invalid --temp: {temp}. Must be between 0 and 100.")
+if cover < 0 or cover > 100:
+    raise SystemExit(f"Invalid --cover: {cover}. Must be between 0 and 100.")
+
 freezing_membership, cool_membership, warm_membership, hot_membership = get_membership_temp(temp)
 sunny_membership, partly_cloudy_membership, overcast_membership = get_membership_cover(cover)
 
