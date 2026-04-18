@@ -86,7 +86,7 @@ def draw_fuzzy_graph(ax, fuzzy_graph, x_min=0, x_max=100, input_value=None, xlab
     ax.grid(True)
 
 def get_membership_temp(temp):
-    if temp > 0 and temp < 30:
+    if temp >= 0 and temp < 30:
         freezing_membership = get_slope((0, 1), (30, 1)) * temp + get_intercept((0, 1), (30, 1))
         cool_membership = 0
         warm_membership = 0
@@ -114,7 +114,7 @@ def get_membership_temp(temp):
     return freezing_membership, cool_membership, warm_membership, hot_membership
 
 def get_membership_cover(cover):
-    if cover > 0 and cover < 20:
+    if cover >= 0 and cover < 20:
         sunny_membership = get_slope((0, 1), (20, 1)) * cover + get_intercept((0, 1), (20, 1))
         partly_cloudy_membership = 0
         overcast_membership = 0
@@ -211,6 +211,11 @@ cover_graph.register_graph(TrapMF((0, 0), (60, 0), (80, 1), (100, 1), name="Over
 
 temp = args.temp
 cover = args.cover
+
+if temp < 0 or temp > 100:
+    raise SystemExit(f"Invalid --temp: {temp}. Must be between 0 and 100.")
+if cover < 0 or cover > 100:
+    raise SystemExit(f"Invalid --cover: {cover}. Must be between 0 and 100.")
 
 freezing_membership, cool_membership, warm_membership, hot_membership = get_membership_temp(temp)
 sunny_membership, partly_cloudy_membership, overcast_membership = get_membership_cover(cover)
