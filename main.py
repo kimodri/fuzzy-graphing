@@ -209,6 +209,7 @@ cover_graph.register_graph(TrapMF((0, 1), (20, 1), (40, 0), (100, 0), name="Sunn
 cover_graph.register_graph(TriMF((20, 0), (50, 1), (80, 0), name="Partly Cloudy"))
 cover_graph.register_graph(TrapMF((0, 0), (60, 0), (80, 1), (100, 1), name="Overcast"))
 
+#INPUT PART ---------------------------
 temp = args.temp
 cover = args.cover
 
@@ -220,9 +221,13 @@ if cover < 0 or cover > 100:
 freezing_membership, cool_membership, warm_membership, hot_membership = get_membership_temp(temp)
 sunny_membership, partly_cloudy_membership, overcast_membership = get_membership_cover(cover)
 
+# Rule 1 : If Sunny ^ Warm => Drive Fast
 rule_1 = get_fast_strength(sunny_membership, warm_membership)
+# Rule 2 : If Cloudy ^ Cool => Drive Slow
 rule_2 = get_slow_strength(partly_cloudy_membership, cool_membership)
 
+
+#OUTPUT PART ---------------------------
 print(f"\n-- Temperature memberships (temp = {temp}) --")
 print(f"  Freezing       : {freezing_membership:.4f}")
 print(f"  Cool           : {cool_membership:.4f}")
@@ -246,6 +251,8 @@ speed_graph.register_graph(TrapMF((0, 0), (25, 0), (75, 1), (100, 1), name="Fast
 slow_mf = speed_graph.graphs[0]
 fast_mf = speed_graph.graphs[1]
 
+
+# DEFUZZIFICATION PART --------------------
 # Create values necessary for defuzzification and visualization of clipped membership functions
 xs = list(range(0, 101))
 actual_slow_ys = []
