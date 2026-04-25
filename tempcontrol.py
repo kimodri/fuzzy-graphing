@@ -112,9 +112,12 @@ parser.add_argument("--continuous", action="store_true",
                     help="Run until Ctrl+C instead of auto-stopping when stable.")
 args = parser.parse_args()
 
-starting_temp = random.randint(10, 40)
-cooling_strength = 1 / 120
-heating_strength = 1 / 120
+# starting_temp = random.randint(10, 40)
+starting_temp = 30
+# cooling_strength = 1 / 120
+cooling_strength = 3
+# heating_strength = 1 / 120  # 0.0833
+heating_strength = 3
 
 error_graph = FuzzyGraph("Error")
 error_graph.register_graph(TrapMF((-4, 1), (-2, 1), (0, 0), (4, 0), name="Negative"))
@@ -147,6 +150,8 @@ If error is Positive and error dot is Positive then output is Heat
 
 current_temp = float(starting_temp)
 prev_error = 0.0
+
+# For visualization
 stable_ticks = 0
 tick = 0
 tick_history = []
@@ -154,6 +159,7 @@ temp_history = []
 error_history = []
 error_dot_history = []
 
+# Print output header
 print(f"Target: {args.target:.2f}  |  Starting temp: {current_temp:.2f}")
 print(f"{'Target':>7} | {'Temperature':>11} | {'Error':>7} | {'Error Dot':>9} | Action")
 print("-" * 60)
@@ -180,27 +186,35 @@ try:
             min(pos_e, pos_ed),
         )
 
-        sum_xy = 0.0
-        sum_y = 0.0
-        for x in range(0, 201):
+        xs = list(range(0, 201))
+        actual_cool_ys = []
+        actual_zero_ys = []
+        actual_heat_ys = []
+        for x in xs:
             cool_x, zero_x, heat_x = get_membership_output(x)
-            mu = max(min(cool_x, cap_cool), min(zero_x, cap_zero), min(heat_x, cap_heat))
-            sum_xy += x * mu
-            sum_y += mu
+            actual_cool_ys.append(min(cool_x, cap_cool))
+            actual_zero_ys.append(min(zero_x, cap_zero))
+            actual_heat_ys.append(min(heat_x, cap_heat))
+        max_ys = [max(c, z_, h) for c, z_, h in zip(actual_cool_ys, actual_zero_ys, actual_heat_ys)]
+
+        sum_xy = sum(x * y for x, y in zip(xs, max_ys))
+        sum_y = sum(max_ys)
         z = sum_xy / sum_y if sum_y != 0 else 100.0
 
-        pct = z - 100.0
+        pct = round(((z - 100.0)/100), 2)
 
         if pct > 0:
             action = "Heat"
             current_temp += heating_strength * pct
+            # print(heating_strength * pct)
         elif pct < 0:
             action = "Cool"
             current_temp -= cooling_strength * abs(pct)
-        else:
+            # print(heating_strength * pct)
+        else:  # pct == 0
             action = "No change"
 
-        print(f"{args.target:7.2f} | {current_temp:11.2f} | {error:7.2f} | {error_dot:9.2f} | {action}")
+        print(f"{args.target:7.5f} | {current_temp:11.5f} | {error:7.5f} | {error_dot:9.5f} | {action}")
 
         tick_history.append(tick)
         temp_history.append(current_temp)
