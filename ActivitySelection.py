@@ -1,5 +1,5 @@
 def activity_selection(start, finish):
-    # Pair and sort activities by finish time
+    # Sort activities by finish time — greedy choice property
     activities = sorted(zip(start, finish), key=lambda x: x[1])
 
     print("\nSorted activities (by finish time):")
@@ -8,7 +8,7 @@ def activity_selection(start, finish):
     for i, (s, f) in enumerate(activities):
         print(f"{i:<8} {s:<8} {f:<8}")
 
-    # Always select the first activity
+    # Select the activity with the earliest finish time (index 0 after sorting)
     count = 1
     j = 0
     selected = [activities[0]]
